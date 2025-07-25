@@ -20,7 +20,7 @@ jobs:
             exit 1
           fi
           if [ -z "${{ secrets.FTP_USERNAME }}" ]; then
-            echo "❌ FTP_USERNAME não está definido!"
+            echo "❌ FTP_USERNAME não está definidoo!"
             exit 1
           fi
           if [ -z "${{ secrets.FTP_PASSWORD }}" ]; then
