@@ -1,11 +1,4 @@
 ---
 deployment:
   tasks:
-    - 'cd /home/syspelc/fju-api'
-    - 'composer install --no-dev --optimize-autoloader'
-    - 'cp .env.example .env || true'
-    - 'php artisan key:generate'
-    - 'php artisan migrate --force'
-    - 'php artisan config:cache'
-    - 'php artisan route:cache'
-    - 'php artisan view:cache'
+    - 'cd /home/syspelc/fju-api && composer install --no-dev --optimize-autoloader && php artisan config:cache && php artisan route:cache && php artisan view:cache'
