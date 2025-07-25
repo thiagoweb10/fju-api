@@ -16,7 +16,7 @@ jobs:
       - name: Verificar se os secrets estão disponíveis (debug)
         run: |
           if [ -z "${{ secrets.FTP_HOST }}" ]; then
-            echo "❌ FTP_HOST não está definido!"
+            echo "❌ FTP_HOST não está definidooo!"
             exit 1
           fi
           if [ -z "${{ secrets.FTP_USERNAME }}" ]; then
