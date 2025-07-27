@@ -12,7 +12,9 @@ use App\Services\CategoryService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Category\StoreRequest;
+use App\Exceptions\CategoryNotFoundException;
 use App\Http\Requests\Category\UpdateRequest;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CategoryApiController extends Controller
 {
@@ -46,72 +48,73 @@ class CategoryApiController extends Controller
         try {
 
             $dataDTO = CategoryDTO::fromArray($request->validated());
+            
             $this->service->create($dataDTO);
+
+            return $this->successResponse([], 'Categoria criada com sucesso!', 201);
 
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 500);
         }
-
-        return $this->successResponse([], 'Categoria criada com sucesso!', 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Category $category): JsonResponse
+    public function show(int $categoryId): JsonResponse
     {
         try {
 
+            $category = Category::findOrFail($categoryId);
+
             $category = $this->service->show($category);
 
+            return $this->successResponse($category->toArray(), 'Operação realizada com sucesso!');
+        
+        } catch (ModelNotFoundException $e) {
+            throw new CategoryNotFoundException("Categoria não encontrada.", 404);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 500);
         }
-
-        return $this->successResponse($category->toArray(), 'Operação realizada com sucesso!');
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRequest $request, Category $category): JsonResponse
+    public function update(UpdateRequest $request, int $category): JsonResponse
     {
         try {
-            
+
+            $category = Category::findOrFail($category);
+
             $data = CategoryDTO::fromArray($request->validated());
+
             $category = $this->service->update($data, $category);
 
+            return $this->successResponse([], 'Registro atualizado com sucesso!');
+
+        } catch (ModelNotFoundException $e) {
+            throw new CategoryNotFoundException("Categoria não encontrada.", 404);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 500);
         }
-
-        return $this->successResponse([], 'Registro atualizado com sucesso!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category): JsonResponse
+    public function destroy(int $category): JsonResponse
     {
         try {
+
+            $category = Category::findOrFail($category);
             
             $this->service->delete($category);
 
-        } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(), 500);
-        }
-
-        return $this->successResponse([], 'Categoria excluida com sucesso!', 200);
-    }
-
-    public function getAllList(): JsonResponse
-    {
-        try {
-
-            $data = $this->service->getListAll();
-
-            return $this->successResponse($data, 'Listagem gerada com sucesso!');
-
+            return $this->successResponse([], 'Categoria excluida com sucesso!', 200);
+        
+        } catch (ModelNotFoundException $e) {
+            throw new CategoryNotFoundException("A categoria que você tentou excluir não existe.", 404);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 500);
         }
