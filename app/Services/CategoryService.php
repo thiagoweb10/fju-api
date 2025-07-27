@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Exception;
 use App\Models\Category;
 use App\DTOs\CategoryDTO;
 use Illuminate\Database\Eloquent\Collection;
@@ -28,7 +27,7 @@ class CategoryService {
         return Category::all();
     }
 
-    public function create(CategoryDTO $category)
+    public function create(CategoryDTO $category): Category
     {
         return Category::create($category->toArray());
     }

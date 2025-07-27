@@ -9,7 +9,7 @@ class CategoryDTO {
 
     public function __construct(
         public readonly ?int $id,
-        public readonly string $name
+        public readonly string $description
     ) {}
 
 
@@ -17,7 +17,7 @@ class CategoryDTO {
     {
         return new self(
             id: $request->input('id')?? null,
-            name: $request->input('name')
+            description: $request->input('description')
         );
     }
 
@@ -25,7 +25,7 @@ class CategoryDTO {
     {
         return new self(
             id: $category->id,
-            name: $category->name
+            description: $category->description
         );
     }
     
@@ -33,7 +33,7 @@ class CategoryDTO {
     {
         return new self(
            id: $data['id'] ?? null,
-            name: $data['name']
+            description: $data['description']
         );
     }
 
@@ -41,7 +41,7 @@ class CategoryDTO {
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'description' => $this->description,
         ];
     }
 }

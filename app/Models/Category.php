@@ -9,7 +9,7 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name','status'];
+    protected $fillable = ['description','status'];
 
     public function championship(){
         return $this->hasMany(Championship::class);
