@@ -11,8 +11,8 @@ class CategoryService {
 
     public function list($request) :LengthAwarePaginator
     {
-        $categories = Category::Filter($request->only(['name']))
-                        ->orderBy('name')
+        $categories = Category::Filter($request->only(['description']))
+                        ->orderBy('description')
                         ->paginate(10);
 
         $categories->getCollection()->transform(function($category){
