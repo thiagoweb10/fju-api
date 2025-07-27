@@ -1,7 +1,20 @@
 <?php
 
-it('Acessando endpoint de listagem de categorias', function () {
-    $response = $this->get('/api/categories');
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-    $response->assertStatus(200);
+uses(RefreshDatabase::class);
+
+it('Acessando endpoint de listagem de categorias', function () {
+
+    $data = [
+        'description' => 'Futebol',
+    ];
+    $response = $this->postJson('/api/categories', $data);
+
+    $response->assertStatus(201);
+
+     $this->assertDatabaseHas('categories', [
+        'description' => 'Futebol',
+    ]);
 });
