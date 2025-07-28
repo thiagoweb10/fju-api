@@ -31,7 +31,7 @@ class CategoryApiController extends Controller
     {
         try {
 
-            $data = $this->service->list($request);
+            $data = $this->service->list($request->only(['description']));
 
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 500);

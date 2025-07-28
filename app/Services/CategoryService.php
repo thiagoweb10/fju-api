@@ -5,22 +5,19 @@ namespace App\Services;
 use App\Models\Category;
 use App\DTOs\CategoryDTO;
 use Illuminate\Database\Eloquent\Collection;
-use App\Exceptions\CategoryNotFoundException;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class CategoryService {
 
     public function list($request): LengthAwarePaginator
     {
-        $categories = Category::Filter($request->only(['description']))
-                        ->orderBy('description')
-                        ->paginate(10);
+        $paginator = $this->getFilteredPaginated($request);
 
-        $categories->getCollection()->transform(function($category){
+        $paginator->getCollection()->transform(function ($category) {
             return CategoryDTO::fromModel($category);
         });
 
-        return $categories;
+        return $paginator;
     }
 
     public function getListAll(): Collection
@@ -45,7 +42,14 @@ class CategoryService {
 
     public function delete(Category $category): void
     {
-        $category = Category::find($category->id);
         $category->delete();
+    }
+
+    public function getFilteredPaginated(array $filters, int $perPage = 10): LengthAwarePaginator
+    {
+        return Category::select('id','description','status')
+                    ->filter($filters)
+                    ->orderBy('description')
+                    ->paginate($perPage);
     }
 }
