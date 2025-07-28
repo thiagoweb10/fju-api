@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CategoryApiController;
-
+use App\Http\Controllers\Api\ChampionshipApiController;
 
 Route::get('/version', function () {
     return response()->json([
@@ -10,4 +10,7 @@ Route::get('/version', function () {
     ]);
 });
 
+
+
 Route::apiResource('categories', CategoryApiController::class);
+Route::apiResource('championships', ChampionshipApiController::class);
