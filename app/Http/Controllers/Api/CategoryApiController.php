@@ -33,11 +33,11 @@ class CategoryApiController extends Controller
 
             $data = $this->service->list($request->only(['description']));
 
+            return $this->successResponse($data, 'Listagem gerada com sucesso!');
+
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 500);
         }
-
-        return $this->successResponse($data, 'Listagem gerada com sucesso!');
     }
 
     /**
@@ -61,18 +61,14 @@ class CategoryApiController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(int $categoryId): JsonResponse
+    public function show(Category $category): JsonResponse
     {
         try {
-
-            $category = Category::findOrFail($categoryId);
 
             $category = $this->service->show($category);
 
             return $this->successResponse($category->toArray(), 'Operação realizada com sucesso!');
         
-        } catch (ModelNotFoundException $e) {
-            throw new CategoryNotFoundException("Categoria não encontrada.", 404);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 500);
         }
