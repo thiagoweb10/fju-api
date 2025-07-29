@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -15,33 +15,30 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-       
-       
-    $exceptions->render(function (NotFoundHttpException $e, Request $request) {
+        $exceptions->render(function (NotFoundHttpException $e, Request $request) {
+            if ($e instanceof NotFoundHttpException) {
+                $previous = $e->getPrevious();
 
+                if ($previous instanceof ModelNotFoundException) {
+                    $model = class_basename($previous->getModel());
+                    $ids = $previous->getIds();
 
-       if ($e instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
-        $previous = $e->getPrevious();
-
-            if ($previous instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
-                $model = class_basename($previous->getModel());
-                $ids = $previous->getIds();
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Registro do tipo {$model} com ID {$ids[0]} não foi encontrado.",
+                    ], 404);
+                }
 
                 return response()->json([
                     'success' => false,
-                    'message' => "Registro do tipo {$model} com ID {$ids[0]} não foi encontrado."
+                    'message' => 'Recurso não encontrado.',
                 ], 404);
             }
-
-            return response()->json([
-                'success' => false,
-                'message' => "Recurso não encontrado."
-            ], 404);
-        }
-
-    });
-    
-    })->create();
+        });
+    })
+    ->withProviders([
+        App\Providers\AppServiceProvider::class,
+    ])
+    ->create();

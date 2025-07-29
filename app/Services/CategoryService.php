@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\Category;
 use App\DTOs\CategoryDTO;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class CategoryService {
-
+class CategoryService
+{
     public function list($request): LengthAwarePaginator
     {
         $paginator = $this->getFilteredPaginated($request);
@@ -47,7 +47,7 @@ class CategoryService {
 
     public function getFilteredPaginated(array $filters, int $perPage = 10): LengthAwarePaginator
     {
-        return Category::select('id','description','status')
+        return Category::select('id', 'description', 'status')
                     ->filter($filters)
                     ->orderBy('description')
                     ->paginate($perPage);

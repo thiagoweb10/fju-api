@@ -9,17 +9,17 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['description','status'];
+    protected $fillable = ['description', 'status'];
 
-    public function championship(){
+    public function championship()
+    {
         return $this->hasMany(Championship::class);
     }
 
-    public function scopeFilter($query, array $filters){
-        
+    public function scopeFilter($query, array $filters)
+    {
         return $query
-                    ->when($filters['name'] ?? false, fn($q, $name) =>
-                        $q->where('name','LIKE',"%{$name}%")
+                    ->when($filters['description'] ?? false, fn ($q, $name) => $q->where('description', 'LIKE', "%{$name}%")
                     );
     }
 }
