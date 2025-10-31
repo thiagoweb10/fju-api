@@ -1,4 +1,4 @@
-name: Deploy Laravel via FTP (na raiz de fju-api)
+name: Test and Deploy Laravel via FTP (na raiz de fju-api)
 
 on:
   push:
@@ -6,8 +6,45 @@ on:
       - main
 
 jobs:
-  deploy-laravel:
+  # =========================
+  # 1️⃣ JOB DE TESTES
+  # =========================
+  test:
+    name: Run Pest Tests
     runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Instalar PHP e extensões
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, bcmath, pdo, pdo_mysql
+          coverage: none
+
+      - name: Instalar dependências do Composer
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Configurar ambiente de teste
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          echo "DB_CONNECTION=sqlite" >> .env
+          echo "DB_DATABASE=:memory:" >> .env
+
+      - name: Rodar testes (Pest PHP)
+        run: vendor/bin/pest --colors=always --compact
+
+
+  # =========================
+  # 2️⃣ JOB DE DEPLOY
+  # =========================
+  deploy:
+    name: Deploy Laravel via FTP
+    runs-on: ubuntu-latest
+    needs: test  # ← Só roda se o job "test" for bem-sucedido
 
     steps:
       - name: Checkout do código
@@ -16,11 +53,11 @@ jobs:
       - name: Verificar se os secrets estão disponíveis (debug)
         run: |
           if [ -z "${{ secrets.FTP_HOST }}" ]; then
-            echo "❌ FTP_HOST não está definidooo!"
+            echo "❌ FTP_HOST não está definido!"
             exit 1
           fi
           if [ -z "${{ secrets.FTP_USERNAME }}" ]; then
-            echo "❌ FTP_USERNAME não está definidoo!"
+            echo "❌ FTP_USERNAME não está definido!"
             exit 1
           fi
           if [ -z "${{ secrets.FTP_PASSWORD }}" ]; then
